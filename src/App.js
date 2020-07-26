@@ -37,8 +37,8 @@ class App extends Component {
     error: null,
   };
 
-  changePage = (page) => {
-    this.setState({ page })
+  changePage = (push) => {
+    push();
   }
 
   setBookmarks = bookmarks => {
@@ -54,19 +54,27 @@ class App extends Component {
     })
   }
 
-  editBookmark = bookmark => {
-    console.log(bookmark);
-    const bookmarks = [...this.state.bookmarks];
-    const foundBm = bookmarks.map(bm => {
-      if (bookmark.id === bm.id) {
-        return bookmark
-      }
-      return bm
-    })
+  editBookmark = (bookmark) => {
+    const editedBookmarkArr = [...this.state.bookmarks].map(bm => 
+      bookmark.id === bm.id 
+        ? bookmark
+        : bm
+    )
 
     this.setState({
-      bookmarks: foundBm,
-    })
+      bookmarks: editedBookmarkArr
+    });
+
+    // // you can put setState in a Promise which will allow us to do
+    // // this.props.onEditBookmark(editedBookmark).then() in EditBookmark.js
+    // // but we won't use this
+    // return new Promise(resolve => {
+    //   this.setState({
+    //     bookmarks: editedBookmarkArr
+    //   }, () => {
+    //     resolve(editedBookmarkArr);
+    //   });
+    // });
   }
 
   componentDidMount() {
@@ -98,14 +106,14 @@ class App extends Component {
             <Route path="/add" render={() =>
                 <AddBookmark
                   onAddBookmark={this.addBookmark}
-                  onClickCancel={() => this.changePage('list')}
+                  onClickCancel={() => this.changePage()}
                 />
             } />  
             <Route path="/edit/:id" render={(props) =>
                 <EditBookmark
                   {...props}
                   onEditBookmark={this.editBookmark}
-                  onClickCancel={() => this.changePage('list')}
+                  onClickCancel={() => this.changePage()}
                 />
             } />  
             <Route exact path="/" render={(props) =>

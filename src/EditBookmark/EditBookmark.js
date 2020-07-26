@@ -93,12 +93,21 @@ class EditBookmark extends Component {
       })
       .then(res => {
         const editedBookmark = {
-          id: this.props.match.params.id,
+          // we have to cast params.id, which is a string, to a number otherwise it won't match 
+          // the ids we have in state and affect our === comparison, use the unary plus operator
+          id: +this.props.match.params.id,
           ...bookmark
         }
-        this.props.onEditBookmark(editedBookmark)
+
+        this.props.onEditBookmark(editedBookmark);
         this.props.history.push("/");
-        this.render();
+
+        // // you can use .then() on the promise returned by onEditBookmark callback prop
+        // // but we won't use this
+        // this.props.onEditBookmark(editedBookmark)
+        // .then((prom) => {
+        //   this.props.history.push("/")
+        // })
       })
       .catch(error => {
         console.log(error)

@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
+import { Route, Switch } from 'react-router-dom';
 import AddBookmark from './AddBookmark/AddBookmark';
+import EditBookmark from './EditBookmark/EditBookmark';
 import BookmarkList from './BookmarkList/BookmarkList';
 import Nav from './Nav/Nav';
 import config from './config';
 import './App.css';
 
-const bookmarks = [
+// const bookmarks = [
   // {
   //   id: 0,
   //   title: 'Google',
@@ -27,12 +29,11 @@ const bookmarks = [
   //   rating: '4',
   //   desc: 'brings together the world\'s largest community of developers.'
   // }
-];
+// ];
 
 class App extends Component {
   state = {
-    page: 'list',
-    bookmarks,
+    bookmarks: [],
     error: null,
   };
 
@@ -44,13 +45,27 @@ class App extends Component {
     this.setState({
       bookmarks,
       error: null,
-      page: 'list',
     })
   }
 
   addBookmark = bookmark => {
     this.setState({
       bookmarks: [ ...this.state.bookmarks, bookmark ],
+    })
+  }
+
+  editBookmark = bookmark => {
+    console.log(bookmark);
+    const bookmarks = [...this.state.bookmarks];
+    const foundBm = bookmarks.map(bm => {
+      if (bookmark.id === bm.id) {
+        return bookmark
+      }
+      return bm
+    })
+
+    this.setState({
+      bookmarks: foundBm,
     })
   }
 
@@ -73,23 +88,33 @@ class App extends Component {
   }
 
   render() {
-    const { page, bookmarks } = this.state
+    const { bookmarks } = this.state
     return (
       <main className='App'>
         <h1>Bookmarks!</h1>
         <Nav clickPage={this.changePage} />
         <div className='content' aria-live='polite'>
-          {page === 'add' && (
-            <AddBookmark
-              onAddBookmark={this.addBookmark}
-              onClickCancel={() => this.changePage('list')}
-            />
-          )}
-          {page === 'list' && (
-            <BookmarkList
-              bookmarks={bookmarks}
-            />
-          )}
+          <Switch>
+            <Route path="/add" render={() =>
+                <AddBookmark
+                  onAddBookmark={this.addBookmark}
+                  onClickCancel={() => this.changePage('list')}
+                />
+            } />  
+            <Route path="/edit/:id" render={(props) =>
+                <EditBookmark
+                  {...props}
+                  onEditBookmark={this.editBookmark}
+                  onClickCancel={() => this.changePage('list')}
+                />
+            } />  
+            <Route exact path="/" render={(props) =>
+              <BookmarkList
+                {...props}
+                bookmarks={bookmarks}
+              />
+            } /> 
+          </Switch>
         </div>
       </main>
     );

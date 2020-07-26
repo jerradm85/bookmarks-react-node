@@ -17,6 +17,7 @@ class BookmarkList extends Component {
             <BookmarkItem
               key={bookmark.id}
               {...bookmark}
+              {...this.props}
             />
           )}
         </ul>
